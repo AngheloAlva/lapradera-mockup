@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    instalaciones: Instalacione;
+    eventos: Evento;
+    noticias: Noticia;
+    galerias: Galeria;
+    'mensajes-contacto': MensajesContacto;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,17 +83,30 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    instalaciones: InstalacionesSelect<false> | InstalacionesSelect<true>;
+    eventos: EventosSelect<false> | EventosSelect<true>;
+    noticias: NoticiasSelect<false> | NoticiasSelect<true>;
+    galerias: GaleriasSelect<false> | GaleriasSelect<true>;
+    'mensajes-contacto': MensajesContactoSelect<false> | MensajesContactoSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-config': SiteConfig;
+    homepage: Homepage;
+    nosotros: Nosotro;
+  };
+  globalsSelect: {
+    'site-config': SiteConfigSelect<false> | SiteConfigSelect<true>;
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
+    nosotros: NosotrosSelect<false> | NosotrosSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -122,7 +140,10 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  nombre: string;
+  apellido: string;
+  role: 'admin' | 'editor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -147,7 +168,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -160,13 +181,208 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "instalaciones".
+ */
+export interface Instalacione {
+  id: number;
+  nombre: string;
+  slug: string;
+  categoria:
+    | 'bungalo'
+    | 'piscina'
+    | 'cancha-tenis'
+    | 'cancha-futbol'
+    | 'cancha-multiuso'
+    | 'fronton'
+    | 'camping'
+    | 'camper'
+    | 'salon'
+    | 'playa'
+    | 'sauna'
+    | 'club-house'
+    | 'capilla'
+    | 'otro';
+  descripcion?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  capacidad?: number | null;
+  amenidades?:
+    | {
+        nombre: string;
+        id?: string | null;
+      }[]
+    | null;
+  imagenes?:
+    | {
+        imagen: number | Media;
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  esReservable?: boolean | null;
+  tarifas?:
+    | {
+        concepto: string;
+        precio: number;
+        moneda?: ('PEN' | 'USD') | null;
+        id?: string | null;
+      }[]
+    | null;
+  estado?: ('disponible' | 'mantenimiento' | 'no-disponible') | null;
+  orden?: number | null;
+  destacado?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventos".
+ */
+export interface Evento {
+  id: number;
+  titulo: string;
+  slug: string;
+  descripcion?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  resumen?: string | null;
+  imagenPortada: number | Media;
+  fechaInicio: string;
+  fechaFin?: string | null;
+  ubicacion?: string | null;
+  tipo?: ('social' | 'deportivo' | 'cultural' | 'gastronomico' | 'institucional') | null;
+  requiereInscripcion?: boolean | null;
+  cupoMaximo?: number | null;
+  estado?: ('proximo' | 'en-curso' | 'finalizado' | 'cancelado') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "noticias".
+ */
+export interface Noticia {
+  id: number;
+  titulo: string;
+  slug: string;
+  resumen?: string | null;
+  contenido: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  imagenPortada?: (number | null) | Media;
+  categoria?: ('comunicado' | 'noticia' | 'aviso' | 'mantenimiento') | null;
+  fechaPublicacion: string;
+  publicado?: boolean | null;
+  autor?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "galerias".
+ */
+export interface Galeria {
+  id: number;
+  titulo: string;
+  descripcion?: string | null;
+  fecha?: string | null;
+  imagenes?:
+    | {
+        imagen: number | Media;
+        descripcion?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  publicado?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mensajes-contacto".
+ */
+export interface MensajesContacto {
+  id: number;
+  nombre: string;
+  email: string;
+  telefono?: string | null;
+  asunto: string;
+  mensaje: string;
+  leido?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +399,40 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'instalaciones';
+        value: number | Instalacione;
+      } | null)
+    | ({
+        relationTo: 'eventos';
+        value: number | Evento;
+      } | null)
+    | ({
+        relationTo: 'noticias';
+        value: number | Noticia;
+      } | null)
+    | ({
+        relationTo: 'galerias';
+        value: number | Galeria;
+      } | null)
+    | ({
+        relationTo: 'mensajes-contacto';
+        value: number | MensajesContacto;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +442,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +465,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -240,6 +476,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  nombre?: T;
+  apellido?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +513,148 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "instalaciones_select".
+ */
+export interface InstalacionesSelect<T extends boolean = true> {
+  nombre?: T;
+  slug?: T;
+  categoria?: T;
+  descripcion?: T;
+  capacidad?: T;
+  amenidades?:
+    | T
+    | {
+        nombre?: T;
+        id?: T;
+      };
+  imagenes?:
+    | T
+    | {
+        imagen?: T;
+        alt?: T;
+        id?: T;
+      };
+  esReservable?: T;
+  tarifas?:
+    | T
+    | {
+        concepto?: T;
+        precio?: T;
+        moneda?: T;
+        id?: T;
+      };
+  estado?: T;
+  orden?: T;
+  destacado?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventos_select".
+ */
+export interface EventosSelect<T extends boolean = true> {
+  titulo?: T;
+  slug?: T;
+  descripcion?: T;
+  resumen?: T;
+  imagenPortada?: T;
+  fechaInicio?: T;
+  fechaFin?: T;
+  ubicacion?: T;
+  tipo?: T;
+  requiereInscripcion?: T;
+  cupoMaximo?: T;
+  estado?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "noticias_select".
+ */
+export interface NoticiasSelect<T extends boolean = true> {
+  titulo?: T;
+  slug?: T;
+  resumen?: T;
+  contenido?: T;
+  imagenPortada?: T;
+  categoria?: T;
+  fechaPublicacion?: T;
+  publicado?: T;
+  autor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "galerias_select".
+ */
+export interface GaleriasSelect<T extends boolean = true> {
+  titulo?: T;
+  descripcion?: T;
+  fecha?: T;
+  imagenes?:
+    | T
+    | {
+        imagen?: T;
+        descripcion?: T;
+        id?: T;
+      };
+  publicado?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "mensajes-contacto_select".
+ */
+export interface MensajesContactoSelect<T extends boolean = true> {
+  nombre?: T;
+  email?: T;
+  telefono?: T;
+  asunto?: T;
+  mensaje?: T;
+  leido?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +695,246 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-config".
+ */
+export interface SiteConfig {
+  id: number;
+  nombreClub: string;
+  logo?: (number | null) | Media;
+  telefono?: string | null;
+  email?: string | null;
+  direccion?: string | null;
+  /**
+   * Ej: Lunes a Domingo, 8:00am - 6:00pm
+   */
+  horarioAtencion?: string | null;
+  redesSociales?: {
+    facebook?: string | null;
+    instagram?: string | null;
+    tiktok?: string | null;
+    youtube?: string | null;
+  };
+  /**
+   * URL del iframe de Google Maps
+   */
+  googleMapsEmbed?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: number;
+  heroSlider?:
+    | {
+        imagen: number | Media;
+        titulo?: string | null;
+        subtitulo?: string | null;
+        textoBoton?: string | null;
+        enlaceBoton?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  seccionBienvenida?: {
+    titulo?: string | null;
+    descripcion?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    imagen?: (number | null) | Media;
+  };
+  seccionInstalaciones?: {
+    titulo?: string | null;
+    subtitulo?: string | null;
+  };
+  seccionEventos?: {
+    titulo?: string | null;
+    subtitulo?: string | null;
+  };
+  bannerCTA?: {
+    titulo?: string | null;
+    descripcion?: string | null;
+    textoBoton?: string | null;
+    enlaceBoton?: string | null;
+    imagenFondo?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "nosotros".
+ */
+export interface Nosotro {
+  id: number;
+  historia?: {
+    titulo?: string | null;
+    contenido?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    imagenes?:
+      | {
+          imagen?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  mision?: string | null;
+  vision?: string | null;
+  valores?:
+    | {
+        titulo: string;
+        descripcion?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  consejoDirectivo?:
+    | {
+        nombre: string;
+        cargo: string;
+        foto?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-config_select".
+ */
+export interface SiteConfigSelect<T extends boolean = true> {
+  nombreClub?: T;
+  logo?: T;
+  telefono?: T;
+  email?: T;
+  direccion?: T;
+  horarioAtencion?: T;
+  redesSociales?:
+    | T
+    | {
+        facebook?: T;
+        instagram?: T;
+        tiktok?: T;
+        youtube?: T;
+      };
+  googleMapsEmbed?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  heroSlider?:
+    | T
+    | {
+        imagen?: T;
+        titulo?: T;
+        subtitulo?: T;
+        textoBoton?: T;
+        enlaceBoton?: T;
+        id?: T;
+      };
+  seccionBienvenida?:
+    | T
+    | {
+        titulo?: T;
+        descripcion?: T;
+        imagen?: T;
+      };
+  seccionInstalaciones?:
+    | T
+    | {
+        titulo?: T;
+        subtitulo?: T;
+      };
+  seccionEventos?:
+    | T
+    | {
+        titulo?: T;
+        subtitulo?: T;
+      };
+  bannerCTA?:
+    | T
+    | {
+        titulo?: T;
+        descripcion?: T;
+        textoBoton?: T;
+        enlaceBoton?: T;
+        imagenFondo?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "nosotros_select".
+ */
+export interface NosotrosSelect<T extends boolean = true> {
+  historia?:
+    | T
+    | {
+        titulo?: T;
+        contenido?: T;
+        imagenes?:
+          | T
+          | {
+              imagen?: T;
+              id?: T;
+            };
+      };
+  mision?: T;
+  vision?: T;
+  valores?:
+    | T
+    | {
+        titulo?: T;
+        descripcion?: T;
+        id?: T;
+      };
+  consejoDirectivo?:
+    | T
+    | {
+        nombre?: T;
+        cargo?: T;
+        foto?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

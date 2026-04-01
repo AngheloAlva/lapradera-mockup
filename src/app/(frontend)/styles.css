@@ -1,164 +1,31 @@
-:root {
-  --font-mono: 'Roboto Mono', monospace;
-}
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-}
+/* Custom theme for La Pradera Country Club */
+@theme {
+  --color-pradera-900: #2a3d15;
+  --color-pradera-800: #3a5420;
+  --color-pradera-700: #48662a;
+  --color-pradera-600: #577735;
+  --color-pradera-500: #6a8a48;
+  --color-pradera-400: #8F9E72;
+  --color-pradera-300: #a8b592;
+  --color-pradera-200: #c5ceb7;
+  --color-pradera-100: #e0e6d8;
+  --color-pradera-50: #f2f4ef;
 
-html {
-  font-size: 18px;
-  line-height: 32px;
+  --color-tierra-700: #997a00;
+  --color-tierra-600: #cc9f00;
+  --color-tierra-500: #e6b515;
+  --color-tierra-400: #FFC82D;
+  --color-tierra-300: #ffd45c;
+  --color-tierra-200: #ffe08a;
+  --color-tierra-100: #fff0c2;
+  --color-tierra-50: #fff8e6;
 
-  background: rgb(0, 0, 0);
-  -webkit-font-smoothing: antialiased;
-}
+  --color-crema: #FAFAF7;
+  --color-crema-dark: #F0F0EB;
 
-html,
-body,
-#app {
-  height: 100%;
-}
-
-body {
-  font-family: system-ui;
-  font-size: 18px;
-  line-height: 32px;
-
-  margin: 0;
-  color: rgb(1000, 1000, 1000);
-
-  @media (max-width: 1024px) {
-    font-size: 15px;
-    line-height: 24px;
-  }
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-h1 {
-  margin: 40px 0;
-  font-size: 64px;
-  line-height: 70px;
-  font-weight: bold;
-
-  @media (max-width: 1024px) {
-    margin: 24px 0;
-    font-size: 42px;
-    line-height: 42px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 38px;
-    line-height: 38px;
-  }
-
-  @media (max-width: 400px) {
-    font-size: 32px;
-    line-height: 32px;
-  }
-}
-
-p {
-  margin: 24px 0;
-
-  @media (max-width: 1024px) {
-    margin: calc(var(--base) * 0.75) 0;
-  }
-}
-
-a {
-  color: currentColor;
-
-  &:focus {
-    opacity: 0.8;
-    outline: none;
-  }
-
-  &:active {
-    opacity: 0.7;
-    outline: none;
-  }
-}
-
-svg {
-  vertical-align: middle;
-}
-
-.home {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 100vh;
-  padding: 45px;
-  max-width: 1024px;
-  margin: 0 auto;
-  overflow: hidden;
-
-  @media (max-width: 400px) {
-    padding: 24px;
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-
-    h1 {
-      text-align: center;
-    }
-  }
-
-  .links {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    a {
-      text-decoration: none;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-    }
-
-    .admin {
-      color: rgb(0, 0, 0);
-      background: rgb(1000, 1000, 1000);
-      border: 1px solid rgb(0, 0, 0);
-    }
-
-    .docs {
-      color: rgb(1000, 1000, 1000);
-      background: rgb(0, 0, 0);
-      border: 1px solid rgb(1000, 1000, 1000);
-    }
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    @media (max-width: 1024px) {
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    .codeLink {
-      text-decoration: none;
-      padding: 0 0.5rem;
-      background: rgb(60, 60, 60);
-      border-radius: 4px;
-    }
-  }
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Montserrat', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
