@@ -1,17 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useMotionValue, animate } from 'motion/react'
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
-import type { Instalacione } from '@/payload-types'
-
-import { InstalacionCard } from '@/components/cards/InstalacionCard'
-import { ScrollReveal } from '@/lib/motion'
-
-const CARD_GAP = 24
-const DOTS_PER_PAGE = 1
+import type { Instalacione, Media } from '@/payload-types'
+import { ScrollReveal, ScrollRevealStagger, ScrollRevealItem } from '@/lib/motion'
 
 interface InstalacionesDestacadasProps {
   titulo?: string | null
@@ -19,150 +13,176 @@ interface InstalacionesDestacadasProps {
   instalaciones: Instalacione[]
 }
 
-export function InstalacionesDestacadas({
-  titulo,
-  subtitulo,
-  instalaciones,
-}: InstalacionesDestacadasProps) {
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = useState(0)
-  const [scrollWidth, setScrollWidth] = useState(0)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [cardWidth, setCardWidth] = useState(0)
-  const x = useMotionValue(0)
+function getImageUrl(media: number | Media): string | null {
+  if (typeof media === 'number') return null
+  return media?.url ?? (media?.filename ? `/api/media/file/${media.filename}` : null)
+}
 
-  const totalCards = instalaciones.length
+function getInstalacionImage(instalacion: Instalacione): string | null {
+  const firstImage = instalacion.imagenes?.[0]
+  const imageMedia = firstImage?.imagen
+  return imageMedia ? getImageUrl(imageMedia) : null
+}
 
-  const measureCarousel = useCallback(() => {
-    if (!carouselRef.current) return
-    const container = carouselRef.current
-    const firstCard = container.querySelector<HTMLElement>('[data-carousel-card]')
-    if (!firstCard) return
-
-    const cWidth = container.offsetWidth
-    const sWidth = container.scrollWidth
-    const fCardWidth = firstCard.offsetWidth
-
-    setContainerWidth(cWidth)
-    setScrollWidth(sWidth)
-    setCardWidth(fCardWidth + CARD_GAP)
-  }, [])
-
-  useEffect(() => {
-    measureCarousel()
-    window.addEventListener('resize', measureCarousel)
-    return () => window.removeEventListener('resize', measureCarousel)
-  }, [measureCarousel, instalaciones])
-
-  const maxDrag = scrollWidth - containerWidth
-  const totalDots = cardWidth > 0 ? Math.ceil(maxDrag / cardWidth) + 1 : totalCards
-
-  const springConfig = { stiffness: 300, damping: 30 }
-
-  const scrollTo = useCallback(
-    (index: number) => {
-      const clamped = Math.max(0, Math.min(index, totalDots - 1))
-      const target = Math.min(clamped * cardWidth, maxDrag)
-      setCurrentIndex(clamped)
-      animate(x, -target, { type: 'spring', ...springConfig })
-    },
-    [cardWidth, maxDrag, totalDots, x],
-  )
-
-  const handleDragEnd = useCallback(
-    (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-      const currentX = x.get()
-      const projectedX = currentX + info.velocity.x * 0.2
-      const targetIndex = Math.round(-projectedX / cardWidth)
-      const clamped = Math.max(0, Math.min(targetIndex, totalDots - 1))
-
-      setCurrentIndex(clamped)
-      const target = Math.min(clamped * cardWidth, maxDrag)
-      animate(x, -target, { type: 'spring', ...springConfig })
-    },
-    [cardWidth, maxDrag, totalDots, x],
-  )
-
-  const goNext = useCallback(() => scrollTo(currentIndex + 1), [currentIndex, scrollTo])
-  const goPrev = useCallback(() => scrollTo(currentIndex - 1), [currentIndex, scrollTo])
-
+export function InstalacionesDestacadas({ instalaciones }: InstalacionesDestacadasProps) {
   if (instalaciones.length === 0) return null
 
+  const mainItem = instalaciones[0]
+  const secondItem = instalaciones[1]
+  const thirdItem = instalaciones[2]
+  const fourthItem = instalaciones[3]
+
+  const mainImage = getInstalacionImage(mainItem)
+  const secondImage = secondItem ? getInstalacionImage(secondItem) : null
+  const thirdImage = thirdItem ? getInstalacionImage(thirdItem) : null
+  const fourthImage = fourthItem ? getInstalacionImage(fourthItem) : null
+
   return (
-    <section className="bg-gray-50 py-20 md:py-32">
+    <section className="bg-white py-20 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        {/* Header */}
-        <ScrollReveal className="mb-16 text-center">
-          {titulo && (
-            <h2 className="font-display text-3xl font-normal text-gray-900 md:text-4xl lg:text-5xl">
-              {titulo}
-            </h2>
-          )}
-          {subtitulo && <p className="mx-auto mt-3 max-w-2xl text-gray-400">{subtitulo}</p>}
+        <ScrollReveal>
+          <div className="mb-16 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl">
+              <span className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-pradera-600">
+                Instalaciones de Clase Mundial
+              </span>
+              <h2 className="font-display text-3xl font-normal italic leading-snug text-gray-900 md:text-4xl lg:text-5xl">
+                Vida Activa, Naturalmente Definida.
+              </h2>
+            </div>
+
+            <p className="max-w-md text-sm leading-relaxed text-gray-500">
+              Descubre nuestras instalaciones diseñadas para brindarte la mejor experiencia
+              deportiva y recreativa en un entorno natural privilegiado.
+            </p>
+          </div>
         </ScrollReveal>
 
-        {/* Carousel */}
-        <div className="relative">
-          {/* Navigation Arrows */}
-          <button
-            type="button"
-            onClick={goPrev}
-            disabled={currentIndex === 0}
-            className="absolute transition-colors hover:bg-gray-100 -left-8 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-white p-4.5 shadow-lg disabled:opacity-30 md:block"
-            aria-label="Anterior"
-          >
-            <ChevronLeft className="h-6 w-6 text-gray-700" />
-          </button>
-
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={currentIndex >= totalDots - 1}
-            className="absolute transition-colors hover:bg-gray-100 -right-8 top-1/2 z-10 hidden -translate-y-1/2 rounded-full bg-white p-4.5 shadow-lg disabled:opacity-30 md:block"
-            aria-label="Siguiente"
-          >
-            <ChevronRight className="h-6 w-6 text-gray-700" />
-          </button>
-
-          {/* Draggable Track */}
-          <div className="overflow-hidden" ref={carouselRef}>
-            <motion.div
-              className="flex cursor-grab gap-6 active:cursor-grabbing"
-              drag="x"
-              dragConstraints={{ left: -maxDrag, right: 0 }}
-              dragElastic={0.1}
-              onDragEnd={handleDragEnd}
-              style={{ x }}
+        <ScrollRevealStagger className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Left Column - Tall Card */}
+          <ScrollRevealItem className="row-span-2">
+            <Link
+              href={`/instalaciones/${mainItem.slug}`}
+              className="group relative block h-full min-h-[500px] overflow-hidden rounded-3xl lg:min-h-full"
             >
-              {instalaciones.map((instalacion) => (
-                <div key={instalacion.id} data-carousel-card className="w-80 shrink-0 md:w-96">
-                  <InstalacionCard instalacion={instalacion} />
+              {mainImage ? (
+                <Image
+                  src={mainImage}
+                  alt={mainItem.nombre}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-pradera-200" />
+              )}
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8">
+                <span className="mb-3 inline-block rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                  Acuáticas
+                </span>
+                <h3 className="font-display text-2xl font-normal text-white md:text-3xl">
+                  {mainItem.nombre}
+                </h3>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/80">
+                  Disfruta de nuestras piscinas de nivel olímpico en un entorno rodeado de
+                  naturaleza.
+                </p>
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-tierra-400 px-6 py-3 text-sm font-semibold uppercase tracking-wider text-pradera-900 transition hover:bg-tierra-300">
+                  Explorar
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+          </ScrollRevealItem>
+
+          {/* Right Column Top - Wide Card */}
+          <ScrollRevealItem>
+            <Link
+              href={secondItem ? `/instalaciones/${secondItem.slug}` : '/instalaciones'}
+              className="group relative block h-60 overflow-hidden rounded-3xl md:h-72"
+            >
+              {secondImage ? (
+                <Image
+                  src={secondImage}
+                  alt={secondItem?.nombre ?? 'Instalación'}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-pradera-100" />
+              )}
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h3 className="font-display text-xl font-normal text-white md:text-2xl">
+                  {secondItem?.nombre ?? 'Canchas de Tenis'}
+                </h3>
+                <p className="mt-1 text-sm text-white/80">
+                  Canchas profesionales para disfrutar del deporte al aire libre.
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-tierra-400 transition group-hover:gap-2">
+                  Ver Horarios
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </Link>
+          </ScrollRevealItem>
+
+          {/* Right Column Bottom - Two Small Cards */}
+          <ScrollRevealItem>
+            <div className="grid grid-cols-2 gap-6">
+              <Link
+                href={thirdItem ? `/instalaciones/${thirdItem.slug}` : '/instalaciones'}
+                className="group relative block h-60 overflow-hidden rounded-3xl md:h-72"
+              >
+                {thirdImage ? (
+                  <Image
+                    src={thirdImage}
+                    alt={thirdItem?.nombre ?? 'Instalación'}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-pradera-100" />
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="font-display text-lg font-normal text-white">
+                    {thirdItem?.nombre ?? 'Mini-Golf'}
+                  </h3>
+                  <p className="mt-1 text-xs text-white/70">Diversión para toda la familia.</p>
                 </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
+              </Link>
 
-        {/* Dot Indicators */}
-        {totalDots > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-2" role="tablist">
-            {Array.from({ length: totalDots }, (_, i) => (
-              <button
-                key={i}
-                type="button"
-                role="tab"
-                aria-selected={i === currentIndex}
-                aria-label={`Ir a grupo ${i + 1}`}
-                onClick={() => scrollTo(i)}
-                className={`h-2.5 rounded-full ${
-                  i === currentIndex ? 'w-8 bg-pradera-600' : 'w-2.5 bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
-        )}
+              <Link
+                href={fourthItem ? `/instalaciones/${fourthItem.slug}` : '/instalaciones'}
+                className="group relative block h-60 overflow-hidden rounded-3xl md:h-72"
+              >
+                {fourthImage ? (
+                  <Image
+                    src={fourthImage}
+                    alt={fourthItem?.nombre ?? 'Instalación'}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-pradera-200" />
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="font-display text-lg font-normal text-white">
+                    {fourthItem?.nombre ?? 'Jardines Zen'}
+                  </h3>
+                  <p className="mt-1 text-xs text-white/70">Espacios de relajación y meditación.</p>
+                </div>
+              </Link>
+            </div>
+          </ScrollRevealItem>
+        </ScrollRevealStagger>
 
-        {/* CTA */}
         <ScrollReveal className="mt-12 text-center">
           <Link
             href="/instalaciones"

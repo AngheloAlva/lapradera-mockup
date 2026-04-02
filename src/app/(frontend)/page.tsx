@@ -6,6 +6,8 @@ import type { Homepage, Media } from '@/payload-types'
 
 import { HeroSlider } from '@/components/sections/HeroSlider'
 import { InstalacionesDestacadas } from '@/components/sections/InstalacionesDestacadas'
+import { ServiciosDestacados } from '@/components/sections/ServiciosDestacados'
+import { SociosCTA } from '@/components/sections/SociosCTA'
 import { ProximosEventos } from '@/components/sections/ProximosEventos'
 import { CTABanner } from '@/components/sections/CTABanner'
 import { GaleriaPreview } from '@/components/sections/GaleriaPreview'
@@ -96,19 +98,25 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Featured Installations */}
+      {/* Featured Installations - Bento Grid */}
       <InstalacionesDestacadas
         titulo={homepage?.seccionInstalaciones?.titulo}
         subtitulo={homepage?.seccionInstalaciones?.subtitulo}
         instalaciones={instalacionesResult.docs}
       />
 
-      {/* Upcoming Events */}
+      {/* Guest Services */}
+      <ServiciosDestacados />
+
+      {/* Upcoming Events - Carousel */}
       <ProximosEventos
         titulo={homepage?.seccionEventos?.titulo}
         subtitulo={homepage?.seccionEventos?.subtitulo}
         eventos={eventosResult.docs}
       />
+
+      {/* Member Benefits CTA */}
+      <SociosCTA />
 
       {/* CTA Banner */}
       {homepage?.bannerCTA?.titulo && (
