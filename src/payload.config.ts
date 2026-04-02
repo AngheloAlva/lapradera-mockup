@@ -1,3 +1,4 @@
+import { es } from '@payloadcms/translations/languages/es'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -50,4 +51,8 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
+  i18n: {
+    fallbackLanguage: 'es',
+    supportedLanguages: { es },
+  },
 })
