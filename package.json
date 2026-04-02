@@ -19,11 +19,14 @@
     "seed": "cross-env NODE_OPTIONS=--no-deprecation npx tsx src/seed.ts"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.2",
     "@payloadcms/db-sqlite": "^3.80.0",
     "@payloadcms/next": "3.80.0",
     "@payloadcms/richtext-lexical": "3.80.0",
+    "@payloadcms/storage-vercel-blob": "^3.80.0",
     "@payloadcms/ui": "3.80.0",
     "@tailwindcss/postcss": "^4.2.2",
+    "@vercel/blob": "^2.3.3",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
