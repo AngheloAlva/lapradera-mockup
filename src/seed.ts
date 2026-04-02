@@ -12,8 +12,9 @@ const dirname = path.dirname(filename)
 // Helpers
 // ---------------------------------------------------------------------------
 
-interface LexicalRoot {
+type LexicalRoot = {
   root: {
+    [k: string]: unknown
     type: 'root'
     children: LexicalParagraph[]
     direction: 'ltr'
@@ -23,7 +24,8 @@ interface LexicalRoot {
   }
 }
 
-interface LexicalParagraph {
+type LexicalParagraph = {
+  [k: string]: unknown
   type: 'paragraph'
   children: LexicalText[]
   direction: 'ltr'
@@ -34,7 +36,8 @@ interface LexicalParagraph {
   version: 1
 }
 
-interface LexicalText {
+type LexicalText = {
+  [k: string]: unknown
   type: 'text'
   text: string
   format: 0
@@ -132,7 +135,7 @@ async function seed() {
     fs.mkdirSync(tmpDir, { recursive: true })
   }
 
-  type MediaRecord = Awaited<ReturnType<typeof payload.create<'media'>>>
+  type MediaRecord = import('./payload-types').Media
 
   async function uploadImage(
     alt: string,
@@ -273,7 +276,21 @@ async function seed() {
   interface InstalacionSeed {
     nombre: string
     slug: string
-    categoria: string
+    categoria:
+      | 'bungalo'
+      | 'piscina'
+      | 'cancha-tenis'
+      | 'cancha-futbol'
+      | 'cancha-multiuso'
+      | 'fronton'
+      | 'camping'
+      | 'camper'
+      | 'salon'
+      | 'playa'
+      | 'sauna'
+      | 'club-house'
+      | 'capilla'
+      | 'otro'
     capacidad: number
     esReservable: boolean
     destacado: boolean
@@ -504,8 +521,8 @@ async function seed() {
   interface EventoSeed {
     titulo: string
     slug: string
-    tipo: string
-    estado: string
+    tipo: 'social' | 'deportivo' | 'cultural' | 'gastronomico' | 'institucional'
+    estado: 'proximo' | 'en-curso' | 'finalizado' | 'cancelado'
     fechaInicio: string
     fechaFin: string
     ubicacion: string
@@ -587,7 +604,8 @@ async function seed() {
     }
     await payload.create({
       collection: 'eventos',
-      data: data as Parameters<typeof payload.create<'eventos'>>[0]['data'],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: data as any,
     })
     console.log(`   ✅ Evento: ${evento.titulo}`)
   }

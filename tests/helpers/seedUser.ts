@@ -23,7 +23,8 @@ export async function seedTestUser(): Promise<void> {
   })
 
   // Create fresh test user
-  await payload.create({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (payload.create as any)({
     collection: 'users',
     data: testUser,
   })
